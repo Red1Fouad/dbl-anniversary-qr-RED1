@@ -1,58 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8" />
     <link rel="icon" href="https://glitch.com/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>slightly annoying qr shenron generator</title>
+    <title>DBL Anniversary Qr Generator</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  </head>
-  <body>
-
+</head>
+<body>
     <!-- this is the start of content -->
     <form id="dbl-qr" method="POST" action="/" enctype="multipart/form-data">
-      <fieldset class="qr-method">
-        <legend>
-          (NEW) QR generation method
-        </legend>
+        <fieldset class="qr-method">
+            <input id="qr-auto" type="radio" name="qr-method" value="auto" checked />
+            <label for="qr-auto">
+                Auto : No file needed. Might fail in some circumstances, try manual if you have an expired code message.
+            </label>
+            <br />
 
-        <input id="qr-auto" type="radio" name="qr-method" value="auto" checked />
-        <label for='qr-auto'>
-          Auto : No file needed. Might fail in some circumstances, try manual if you have an expired code message.
-        </label>
-        <br />
+            <input id="qr-manual" type="radio" name="qr-method" value="manual" />
+            <label for="qr-manual">
+                Manual : Upload a recently generated code from your account (or otherwise). Use if auto fails.
+            </label>
+            <br /><br />
 
-        <input id="qr-manual" type="radio" name="qr-method" value="manual" />
-        <label for='qr-manual'>
-          Manual : Upload a recently generated code from your account (or otherwise). Use if auto fails.
-        </label>
-        <br /><br />
+            <label for="qrcode">Upload a recent QRcode generated with your own account :</label>
+            <input type="file" id="qrcode" name="qrcode" />
+            <input type="hidden" id="qrcode_b64" />
+        </fieldset>
 
-        <label for="qrcode">Upload a recent QRcode generated with your own account :</label>
-        <input type="file" id="qrcode" name="qrcode" />
-        <input type="hidden" id="qrcode_b64" />
-      </fieldset>
+        <fieldset>
+            <legend>
+                Enter up to three friend codes to generate QR codes with.
+            </legend>
 
+            <input type="text" minlength="8" maxlength="8" placeholder="Friend 1 ..." autocomplete="dbl-qr-1" name="dbl-qr-1" id="friend-1" />
+            <input type="text" minlength="8" maxlength="8" placeholder="Friend 2 ..." autocomplete="dbl-qr-2" name="dbl-qr-2" id="friend-2" />
+            <input type="text" minlength="8" maxlength="8" placeholder="Friend 3 ..." autocomplete="dbl-qr-3" name="dbl-qr-3" id="friend-3" />
+        </fieldset>
 
-      <fieldset>
-        <legend>
-          Enter up to three friend codes to generate QR codes with.
-        </legend>
-
-        <input type="text" minlength="8" maxlength="8" placeholder="Friend 1 ..." autocomplete="dbl-qr-1" name="dbl-qr-1" />
-        <input type="text" minlength="8" maxlength="8" placeholder="Friend 2 ..." autocomplete="dbl-qr-1" name="dbl-qr-2" />
-        <input type="text" minlength="8" maxlength="8" placeholder="Friend 3 ..." autocomplete="dbl-qr-1" name="dbl-qr-3" />
-      </fieldset>
-
-      <input type="submit" value="Display codes" />
+        <input type="submit" value="Display codes" />
     </form>
 
     <div class="qr-display">
-      <div id="qr-display-1"></div>
-      <div id="qr-display-2"></div>
-      <div id="qr-display-3"></div>
+        <div id="qr-display-1"></div>
+        <div id="qr-display-2"></div>
+        <div id="qr-display-3"></div>
     </div>
 
     <script type="text/javascript" src="libraries/jsqrcode/grid.js"></script>
@@ -72,7 +66,48 @@
     <script type="text/javascript" src="libraries/jsqrcode/findpat.js"></script>
     <script type="text/javascript" src="libraries/jsqrcode/alignpat.js"></script>
     <script type="text/javascript" src="libraries/jsqrcode/databr.js"></script>
+    <script type="text/javascript" src="transpiled-qr.js"></script>
 
-    <script type="text/javascript" src="qr.js"></script>
-  </body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Load saved data from localStorage
+            if (localStorage.getItem("friend1")) {
+                document.getElementById("friend-1").value = localStorage.getItem("friend1");
+            }
+            if (localStorage.getItem("friend2")) {
+                document.getElementById("friend-2").value = localStorage.getItem("friend2");
+            }
+            if (localStorage.getItem("friend3")) {
+                document.getElementById("friend-3").value = localStorage.getItem("friend3");
+            }
+            if (localStorage.getItem("qr-method")) {
+                document.querySelector(`input[name="qr-method"][value="${localStorage.getItem("qr-method")}"]`).checked = true;
+            }
+
+            // Save data to localStorage
+            document.getElementById("friend-1").addEventListener("input", function () {
+                localStorage.setItem("friend1", this.value);
+            });
+            document.getElementById("friend-2").addEventListener("input", function () {
+                localStorage.setItem("friend2", this.value);
+            });
+            document.getElementById("friend-3").addEventListener("input", function () {
+                localStorage.setItem("friend3", this.value);
+            });
+            document.querySelectorAll('input[name="qr-method"]').forEach(radio => {
+                radio.addEventListener("change", function () {
+                    localStorage.setItem("qr-method", this.value);
+                });
+            });
+        });
+    </script>
+
+    <!-- Added footer text -->
+    <footer style="text-align: center; margin-top: 20px; position: relative;">
+      <div style="background-color: rgba(0, 0, 0, 0.75); padding: 10px; border-radius: 5px; color: white; display: inline-block;">
+          Made by LeCitronVert, Edited by RED1
+      </div>
+  </footer>
+  
+</body>
 </html>
